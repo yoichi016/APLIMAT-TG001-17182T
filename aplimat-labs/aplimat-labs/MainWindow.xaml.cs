@@ -1,5 +1,6 @@
 ﻿using SharpGL;
 using SharpGL.SceneGraph.Primitives;
+using SharpGL.SceneGraph.Quadrics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,38 +18,150 @@ using System.Windows.Shapes;
 
 namespace aplimat_labs
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+
+        private const float LINE_SMOOTHNESS = 0.02f;
+        private const float GRAPH_LIMIT = 15;
+        private const int TOTAL_CIRCLE_ANGLE = 360;
         public MainWindow()
         {
             InitializeComponent();
+            this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
         }
 
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
             OpenGL gl = args.OpenGL;
-
-            // Clear The Screen And The Depth Buffer
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-
-            // Move Left And Into The Screen
             gl.LoadIdentity();
-            gl.Translate(0.0f, 0.0f, -6.0f);
 
+            gl.Translate(0.0f, 0.0f, -40.0f);
+            //gl.Color(0, 1, 0);
+            DrawCartesianPlane(gl); //draw cartesian plane with unit lines
+            DrawPoint(gl, 1, 1); //draw a point with coordinates (1, 1)
+            DrawLinearFunction(gl);
+            DrawQuadraticFunction(gl);
+            DrawCircle(gl);
+        }
+        
 
-            gl.Rotate(rotation, 0.0f, 1.0f, 0.0f);
+        private void DrawCartesianPlane(OpenGL gl)
+        {
 
-            Teapot tp = new Teapot();
-            tp.Draw(gl, 14, 1, OpenGL.GL_FILL);
+            //draw y-axis
+            gl.Begin(OpenGL.GL_LINE_STRIP);
 
-            rotation += 3.0f;
+            gl.Color(1.0f, 0.0f, 1.0f);
+            gl.Vertex(0, -GRAPH_LIMIT, 0);
+            gl.Vertex(0, GRAPH_LIMIT, 0);
+            gl.End();
+
+            //draw x-axis
+            gl.Begin(OpenGL.GL_LINE_STRIP);
+            gl.Vertex(-GRAPH_LIMIT, 0, 0);
+            gl.Vertex(GRAPH_LIMIT, 0, 0);
+            gl.End();
+
+            //draw unit lines
+            for (int i = -15; i <= 15; i++)
+            {
+                gl.Begin(OpenGL.GL_LINE_STRIP);
+                gl.Vertex(-0.2f, i, 0);
+                gl.Vertex(0.2f, i, 0);
+                gl.End();
+
+                gl.Begin(OpenGL.GL_LINE_STRIP);
+                gl.Vertex(i, -0.2f, 0);
+                gl.Vertex(i, 0.2f, 0);
+                gl.End();
+            }
         }
 
-        float rotation = 0;
+        private void DrawPoint(OpenGL gl, float x, float y)
+        {
+            gl.PointSize(5.0f);
+            gl.Begin(OpenGL.GL_POINTS);
+            gl.Vertex(x, y);
+            gl.End();
+        }
 
+        private void DrawLinearFunction(OpenGL gl)
+        {
+            /*
+             * f(x) = x + 2;
+             * Let x be 4, then y = 6 (4, 6)
+             * Let x be -5, then y = -3 (-5, -3)
+             * */
+            gl.PointSize(2.0f);
+            gl.Begin(OpenGL.GL_POINTS);
+            for (float x = -(GRAPH_LIMIT - 5); x <= (GRAPH_LIMIT - 5); x+=LINE_SMOOTHNESS)
+            {
+                gl.Vertex(x, x + 2);
+            }
+            gl.End();
+
+            DrawText(gl, "f(x) = x + 2", 500, 400);
+
+        }
+
+
+        private void DrawQuadraticFunction(OpenGL gl)
+        {
+            /*
+             * f(x) = x^2 + 2x - 5;
+             * Let x be 2, then y = 3
+             * Let x be -1, then y = -6
+             */
+
+            //gl.PointSize(1.0f);
+            //gl.Begin(OpenGL.GL_POINTS);
+            //for (float x = -(GRAPH_LIMIT - 5); x <= (GRAPH_LIMIT - 5); x += LINE_SMOOTHNESS)
+            //{
+            //    gl.Vertex(x, Math.Pow(x, 2) + (2 * x) - 5);
+            //}
+            //gl.End();
+
+            /*
+             * f(x) = x^2
+             * 
+             */
+            gl.PointSize(2.0f);
+            gl.Begin(OpenGL.GL_POINTS);
+            for (float x = -(GRAPH_LIMIT - 5); x <= (GRAPH_LIMIT - 5); x += LINE_SMOOTHNESS)
+            {
+                gl.Vertex(x, Math.Pow(x, 2));
+            }
+            gl.End();
+
+            DrawText(gl, "f(x) = x ^ 2", 360, 380);
+
+        }
+
+        private void DrawCircle(OpenGL gl)
+        {
+            float radius = 3.0f;
+
+            gl.PointSize(2.0f);
+            gl.Begin(OpenGL.GL_POINTS);
+            for (int i = 0; i <= TOTAL_CIRCLE_ANGLE; i++)
+            {
+                gl.Vertex(Math.Cos(i) * radius, Math.Sin(i) * radius);
+            }
+            gl.End();
+
+            DrawText(gl, "(cos(x), sin(x))", 350, 200);
+        }
+
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.W:
+                    break;
+            }
+        } 
+        #region opengl init
         private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
             OpenGL gl = args.OpenGL;
@@ -73,6 +186,15 @@ namespace aplimat_labs
             gl.Enable(OpenGL.GL_LIGHT0);
 
             gl.ShadeModel(OpenGL.GL_SMOOTH);
+
         }
+        #endregion
+
+        #region draw text
+        private void DrawText(OpenGL gl, string text, int x, int y)
+        {
+            gl.DrawText(x, y, 1, 1, 1, "Arial", 12, text);
+        }
+        #endregion
     }
 }
