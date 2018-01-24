@@ -10,6 +10,7 @@ We will be using SharpGL and C# for the whole duration of the term. The SharpGL/
 --------------------------------------------------------------------
 
 How to install SharpGL
+
 NOTE: Internet connection is required while installing.
 
 1. Tools > Nuget Package Manager > Package Manager Console
