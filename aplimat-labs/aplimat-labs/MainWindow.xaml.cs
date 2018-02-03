@@ -1,4 +1,6 @@
-﻿using SharpGL;
+﻿using aplimat_labs.Models;
+using aplimat_labs.Utilities;
+using SharpGL;
 using SharpGL.SceneGraph.Primitives;
 using SharpGL.SceneGraph.Quadrics;
 using System;
@@ -24,27 +26,93 @@ namespace aplimat_labs
         private const float LINE_SMOOTHNESS = 0.02f;
         private const float GRAPH_LIMIT = 15;
         private const int TOTAL_CIRCLE_ANGLE = 360;
+
+         private Vector3 a = new Vector3(15, 15, 0);
+         private Vector3 b = new Vector3(-2, 10, 0);//0 x,y,z;
+
+        private const int Heads = 0;
+        private const int Tails = 7;
+        private Randomizer rng = new Randomizer(-20, 20);
+        public Randomizer rngColor = new Randomizer(0, 1);
+        
         public MainWindow()
         {
             InitializeComponent();
             this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
+           // Vector3 c = a + b;
+            //Console.writeline("vector c values: x: " + c.x, " y: " + c.y + "z: " + c.z);
         }
+        private List<CubeMesh> myCubes = new List<CubeMesh>();
 
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
             OpenGL gl = args.OpenGL;
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.LoadIdentity();
+            
+            gl.Translate(0.0f, 0.0f, -100.0f);
+            
+            CubeMesh myCube = new CubeMesh();
+            myCube.Position = new Vector3(Gaussian.Generate(0,15), rng.GenerateInt(), 0);
+            myCubes.Add(myCube);
+            int counter = 0;
+            foreach (var cube in myCubes)
+            {
+                //cube.Draw(gl);
+                gl.Color(rngColor.GenerateDouble(), rngColor.GenerateDouble(), rngColor.GenerateDouble());
+                //  gl.Scale(rngColor.GenerateDouble(), rngColor.GenerateDouble(), rngColor.GenerateDouble());
 
-            gl.Translate(0.0f, 0.0f, -40.0f);
-            //gl.Color(0, 1, 0);
-            DrawCartesianPlane(gl); //draw cartesian plane with unit lines
-            DrawPoint(gl, 1, 1); //draw a point with coordinates (1, 1)
-            DrawLinearFunction(gl);
-            DrawQuadraticFunction(gl);
-            DrawCircle(gl);
+                if (counter >= 0) {
+                    cube.Draw(gl);
+                    counter++;
+                }
+
+                if (counter <= 100)
+                {
+                    List<CubeMesh> myCubes = new List<CubeMesh>();
+                    counter = 0;
+                }
+
+            }
+            
+            // switch (rng.GenerateInt()) {
+            //     case 0:
+            //         myCube.Position += new Vector3(0, 1.0f, 0);
+            //         break;
+            //     case 1:
+            //         myCube.Position += new Vector3(0, -1.0f, 0);
+            //         break;
+            //     case 2:
+            //         myCube.Position += new Vector3(1.0f, 0f, 0);
+            //         break;
+            //     case 3:
+            //         myCube.Position += new Vector3(1.0f, 0, 0);
+            //         break;
+            //     case 4:
+            //         myCube.Position += new Vector3(1.0f, 1.0f, 0);
+            //         break;
+            //     case 5:
+            //         myCube.Position += new Vector3(-1.0f, -1.0f, 0);
+            //         break;
+            //     case 6:
+            //         myCube.Position += new Vector3(-1.0f, 1.0f, 0);
+            //         break;
+            //     case 7:
+            //         myCube.Position += new Vector3(1.0f, -1.0f, 0);
+            //         break;
+
+            // }
+
+            // myCube.Draw(gl);
+            // //myCube.Position += new Vector3(0, 0.1f, 0);
+            // //gl.Color(0, 1, 0);
+            // //DrawCartesianPlane(gl); //draw cartesian plane with unit lines
+            //// DrawPoint(gl, 1, 1); //draw a point with coordinates (1, 1)
+            // //DrawLinearFunction(gl);
+            //// DrawQuadraticFunction(gl);
+            //// DrawCircle(gl);
         }
-        
+
 
         private void DrawCartesianPlane(OpenGL gl)
         {
@@ -182,8 +250,8 @@ namespace aplimat_labs
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_AMBIENT, light0ambient);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, light0specular);
-            gl.Enable(OpenGL.GL_LIGHTING);
-            gl.Enable(OpenGL.GL_LIGHT0);
+            gl.Disable(OpenGL.GL_LIGHTING);
+            gl.Disable(OpenGL.GL_LIGHT0);
 
             gl.ShadeModel(OpenGL.GL_SMOOTH);
 
