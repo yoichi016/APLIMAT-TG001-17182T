@@ -69,7 +69,7 @@ namespace aplimat_labs
 
                 if (counter <= 100)
                 {
-                    List<CubeMesh> myCubes = new List<CubeMesh>();
+                    myCubes = new List<CubeMesh>();
                     counter = 0;
                 }
 
