@@ -58,20 +58,14 @@ namespace aplimat_labs
             int counter = 0;
             foreach (var cube in myCubes)
             {
-                //cube.Draw(gl);
+                cube.Draw(gl);
                 gl.Color(rngColor.GenerateDouble(), rngColor.GenerateDouble(), rngColor.GenerateDouble());
                 //  gl.Scale(rngColor.GenerateDouble(), rngColor.GenerateDouble(), rngColor.GenerateDouble());
 
-                if (counter >= 0) {
-                    cube.Draw(gl);
-                    counter++;
-                }
+              
+                
 
-                if (counter <= 100)
-                {
-                    myCubes = new List<CubeMesh>();
-                    counter = 0;
-                }
+             
 
             }
             
