@@ -7,15 +7,12 @@ using System.Threading.Tasks;
 
 namespace aplimat_labs.Models
 {
-    class CubeMesh
+    public class CubeMesh : Movable
     {
-        public Vector3 Position;
-
         public CubeMesh()
         {
-            this.Position = new Vector3();
-        }
 
+        }
         public CubeMesh(Vector3 initPos) {
             this.Position = initPos;
         }
@@ -62,6 +59,14 @@ namespace aplimat_labs.Models
             gl.Vertex(this.Position.x - 0.5, this.Position.y - 0.5f, this.Position.z - 0.5f);
             gl.Vertex(this.Position.x + 0.5, this.Position.y - 0.5f, this.Position.z - 0.5f);
             gl.End();
+
+            UpdateMotion();
+        }
+
+        private void UpdateMotion() {
+            this.Velocity += this.Accelereration;
+            this.Position += this.Velocity;
+            this.Accelereration *= 0;
         }
     }
 }
